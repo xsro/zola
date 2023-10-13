@@ -2,6 +2,7 @@ mod codeblock;
 mod context;
 mod markdown;
 mod shortcode;
+mod replace;
 
 use shortcode::{extract_shortcodes, insert_md_shortcodes};
 
@@ -12,6 +13,11 @@ pub use crate::markdown::Rendered;
 pub use context::RenderContext;
 
 pub fn render_content(content: &str, context: &RenderContext) -> Result<markdown::Rendered> {
+    let delimiters = vec![
+            "$(.+)$->{{ katex(body=\"(.+)\") }}".to_string(),
+            "$$(.+)$$->{% katex(block=true) %}(.+){% end %}".to_string(),
+        ];
+    let content = &replace::replace(content,&delimiters);
     // avoid parsing the content if needed
     if !content.contains("{{") && !content.contains("{%") {
         return markdown_to_html(content, context, Vec::new());
