@@ -56,13 +56,13 @@ pub fn replace(rawcontent: &str, delimiters: &Vec<String>) -> String {
             match leftside_detacted {
                 None => {
                     for (id, d) in delimiters.iter().enumerate() {
-                        if chars.len() < i + d.left.len() {
+                        if chars.len() < i + d.left.len() + d.right.len() {
                             continue;
                         }
-                        if String::from_iter(&chars[i..i + d.left.len()]) == d.left
-                            && String::from_iter(
-                                &chars[i + d.left.len()..i + d.left.len() + d.right.len()],
-                            ) != d.right
+                        let left=String::from_iter(&chars[i..i + d.left.len()]) == d.left;
+                        let right=String::from_iter(&chars[i + d.left.len()..i + d.left.len() + d.right.len()]) == d.right;
+                        
+                        if left && !right
                         {
                             out.extend(d.left_to.chars());
                             leftside_detacted = Some(id);
